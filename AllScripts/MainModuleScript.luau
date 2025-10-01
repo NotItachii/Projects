@@ -55,7 +55,7 @@ module.addEXP = function(plr, amount)
 	task.wait()
 	for i,v in pairs(module.LevelingSystem) do
 		while true do
-			if calculatedAmount >= v.ExpRequired and currentLevel <= v.CurrentLevel then
+			if calculatedAmount >= v.ExpRequired and currentLevel <= v.CurrentLevel then --the fact that both variables are called CurrentLevel is something you cant make up, what an Idiot I am
 				module.PlayerData.Experience[plr.UserId] = calculatedAmount - v.ExpRequired
 				print(module.PlayerData.Experience[plr.UserId])
 				currentLevel += 1
