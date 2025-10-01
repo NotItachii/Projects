@@ -1,0 +1,30 @@
+(Skills slash concepts I wish to learn in the future, a way to organize myself)
+
+
+Sliding and wall jumping (physics I guess) and spoofing animations?
+Horse movement with WASD (learning how to make cars just allows for horse movements too I suppose)
+General rules when it comes to optimization 
+Player inventory, hunger, global storage system wtv that means?
+"experience with Octree grid for spatial queries" -- i'll look into this
+slapping towers (horrible fucking idea lmao) he wants someone to script him a game where you slap towers and they hit back
+
+Could learn how to do for fun: restaurant tycoon subsystems? cooking, serving etc etc
+
+Could learn how to make NPC AI too
+
+some terms that i dont know what they mean: Spherical Coordination
+Object Tweening
+
+custom generation (world, obby etc)
+
+
+Experience in: Tower Defense Games (apparently lots of shitheads love tower defense), Simulator games (a broad category but they all follow quite the same
+pattern), Tycoon Games (self-explanatory), Fighting games slash RPG games (combat systems, quest system etc etc).
+
+
+Roblox FPS (learning how to create guns, working with first person system)
+Vehicles (learning how to script vehicles from scratch)
+AI behaviour (boss fights per say, or just normal NPC ai behaviour)
+Custom Generation (would be fun to learn how a randomly generated obby is made I know someone made that already)
+
+Roact, Rodux, cmdr, DataStore2 (submodules, dependabot)
