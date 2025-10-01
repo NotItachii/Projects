@@ -1,1 +1,3 @@
 I guess this is my first added file yayy!
+
+Another note I added locally (will have to transmit to another txt editor cause notepad i mean, that's not what cool devs use right?)
