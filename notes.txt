@@ -5,3 +5,5 @@ Another note I added locally (will have to transmit to another txt editor cause 
 try 3
 
 this is a new branch!
+
+--more notes
