@@ -20,23 +20,25 @@ when there's a separate independent threat doing continuous update of the most i
 but hey maybe i am stupidly wrong and this is stupidly wrong to do so please let me know if so 
 ]]
 
+--idk how many lines of code you wish me to explain so ill skim through them fast!
+
 local players = game.Players:GetChildren()
-local moduleScript = require(game.ReplicatedStorage.ModuleScript)
+local moduleScript = require(game.ReplicatedStorage.ModuleScript) --requires the module script
 
 
 task.spawn(function()
 	while true do
 		task.wait()
-		players = game.Players:GetChildren()
+		players = game.Players:GetChildren() --starts a new thread and updates player table continuously
 	end
 end)
 
 
 --Tweakable Variables
 
-local minNumberOfPlayers = 3
-local IntermissionTimerNumber = 20
-local RoundLength = 60
+local minNumberOfPlayers = 3 --min num of players required to start 
+local IntermissionTimerNumber = 20 --intermission timer 
+local RoundLength = 60 --how long the round will last
 
 --EXTRA FUNCTIONS FOR READABILITY
 
@@ -44,7 +46,7 @@ local function teleportPlayers(spawnPoints)
 	
 	local spawnPoints = game.Workspace.Map.Spawns:GetChildren()
 	
-	for plri,plr in pairs(players) do
+	for plri,plr in pairs(players) do --iterates through player table
 
 		local inv = plr:WaitForChild("Inventory")
 		local equipped = inv:WaitForChild("CurrentlyEquipped")
@@ -52,12 +54,14 @@ local function teleportPlayers(spawnPoints)
 		local hum = character.HumanoidRootPart
 		local weapons = game.ReplicatedStorage.Weapons:GetChildren()
 
+		--fetches important data like inv, and string value of currently equipped so the server can dupe items in invetory
+
 		if hum then
 
-			for spwni,spawnP in pairs(spawnPoints) do
+			for spwni,spawnP in pairs(spawnPoints) do --iterates through spawnpoint and teleport based on index (yes I know how to make it random this is a prototype!)
 				if plri == spwni then
 					hum.CFrame = spawnP.CFrame + Vector3.new(0, 1, 0) --Makes sure the player doesn't teleport inside the part
-					for i,v in pairs(weapons) do
+					for i,v in pairs(weapons) do --gives each character their equipped weapon
 						if v.Name == equipped.Value then
 							local clonedSword = v:Clone()
 							clonedSword.Parent = plr.Backpack
@@ -72,7 +76,7 @@ local function teleportPlayers(spawnPoints)
 end
 
 local function TableAndKIll(alivePlayers)
-	if #alivePlayers > 1 then
+	if #alivePlayers > 1 then --table found within module script, includes all the alive players I put it in module script so localscript can access for spectate purposes
 		for i,plr in pairs(players) do
 			local hum = plr.Character.Humanoid
 			if hum then
@@ -102,24 +106,24 @@ end
 
 local function randomMap()
 	local allMaps = moduleScript.Maps
-	local chosenToVoteMaps = moduleScript.ChosenToVote
+	local chosenToVoteMaps = moduleScript.ChosenToVote --so there are multiple maps stored, but this table only takes a few for now
 	
 
 	local randomVariable = 1
-	while #chosenToVoteMaps < 2 do
+	while #chosenToVoteMaps < 2 do --aka 2
 		for i,v in pairs(allMaps) do
 			
 			randomVariable = math.random(1, #allMaps)
 			if randomVariable == i then
 				if not table.find(chosenToVoteMaps, v) and #chosenToVoteMaps < 2 then 
-					table.insert(chosenToVoteMaps, v)
+					table.insert(chosenToVoteMaps, v) --takes two random maps and adds them into the table
 				
 				end
 			end
 		end
 	end
 	if #chosenToVoteMaps == 2 then
-		return chosenToVoteMaps
+		return chosenToVoteMaps --once it has two it returns the table
 	end
 
 end
@@ -129,7 +133,7 @@ end
 local function waitingForPlayers()
 
 
-
+--fairly straightforward, a while loop that checks the amount of players to start the game
 	while true do
 		task.wait()
 		if #players >= minNumberOfPlayers then
@@ -143,13 +147,13 @@ local function waitingForPlayers()
 end
 
 local function gameBegins()
-
+ --attribute changes so local gui can catch it
 	game.Workspace:SetAttribute("Intermission", IntermissionTimerNumber)
 	game.Workspace:SetAttribute("GameTimer", RoundLength)
 
 	local timer = true
 	local number = IntermissionTimerNumber
-
+--same for the timer
 	while timer do
 		game.Workspace:SetAttribute("Intermission", number)
 		print(number)
@@ -159,11 +163,11 @@ local function gameBegins()
 			break
 		end
 		task.wait(1)
-		if number == 0 then
+		if number == 0 then --ends the timer and starts the voting stage
 			timer = false
 			game.Workspace:SetAttribute("Intermission", number)
 			task.wait(1)
-			game.Workspace:SetAttribute("VotingStage", true)
+			game.Workspace:SetAttribute("VotingStage", true) --voting stage :))
 		
 		end
 	end
@@ -173,15 +177,17 @@ end
 
 local function PreparinVote()
 	
-	
+	--fetches the chosenamps through function callback value
 	local chosenMapsToVote = randomMap()
 	local mapsForVote = moduleScript.MapsForVote
 	local mapList = game:GetService("ServerStorage").Maps:GetChildren()
 
 	
-
+--for now two maps only
 	local name1 = chosenMapsToVote[1]
-	local name2 = chosenMapsToVote[2]
+	local name2 = chosenMapsToVote[2] 
+
+	--info abt the maps are stored within the module script, i also added my module script code to my github
 	
 	mapsForVote.Map1.Name = name1
 	mapsForVote.Map2.Name = name2
@@ -212,7 +218,7 @@ local function PreparinVote()
 			for i,v in pairs(players) do
 				local frame = v.PlayerGui.ScreenGui:FindFirstChild("Vote")
 				if frame then
-					frame:Destroy()
+					frame:Destroy() --destroys the gui after the vote timer is done
 				end
 				game.Workspace:SetAttribute("VotingStage", false)
 			end
@@ -221,7 +227,7 @@ local function PreparinVote()
 	end
 	
 	local finalVoteNumber1 = #moduleScript.MapsForVote.Map1.Players
-	local finalVoteNumber2 = #moduleScript.MapsForVote.Map2.Players
+	local finalVoteNumber2 = #moduleScript.MapsForVote.Map2.Players --fetches the results
 	
 	
 	if finalVoteNumber1 > finalVoteNumber2 then
@@ -236,6 +242,8 @@ local function PreparinVote()
 		end 
 	end
 	
+	--in short, the first if statemement exists in case first map won, second in case the second won, third in case they're equal
+
 	if finalVoteNumber2 > finalVoteNumber1 then
 		for i,v in pairs(game.ServerStorage.Maps:GetChildren()) do
 			if v.Name == name2 then
@@ -270,17 +278,16 @@ local function PreparinVote()
 end
 
 local function gameOnGoing()
-	
+	--this is the longest fucking function please dont have me explain all of this sigh i guess i will
 	game.ReplicatedStorage.Spectate:Clone().Parent = game.StarterGui.ScreenGui
 	game.ReplicatedStorage.Press:Clone().Parent = game.StarterGui.ScreenGui
 	local spawnPoints = game.Workspace.Map.Spawns:GetChildren()
 	local alivePlayers = moduleScript.AlivePlayers
 	local onGoing = false
 
-	--INSERTS PLAYERS INSIDE THE TABLE
 
-	
-	
+
+	--INSERTS PLAYERS INSIDE THE TABLE
 	for i,plr in pairs(players) do
 		print(#players)
 		print(alivePlayers)
@@ -314,21 +321,21 @@ local function gameOnGoing()
 			game.StarterGui.ScreenGui:FindFirstChild("Press"):Destroy()
 			print("Winner is: " ..alivePlayers[1].Name)
 			alivePlayers[1]:FindFirstChild("leaderstats"):FindFirstChild("Coins").Value += 20
-			moduleScript.addEXP(alivePlayers[1], math.random(100, 200))
+			moduleScript.addEXP(alivePlayers[1], math.random(100, 200)) --gives exp (function can be find inside the modulescript)
 			if alivePlayers[1].Backpack:FindFirstChild("Sword") then
 				alivePlayers[1].Backpack:FindFirstChild("Sword"):Destroy()
 			elseif alivePlayers[1].Character:FindFirstChild("Sword") then
 				alivePlayers[1].Character:FindFirstChild("Sword"):Destroy()
 			else
-				print("Sword not found")
+				print("Sword not found") --should use waitforchild or findfirstchild much more often to stop code from breaking
 			end
 
 			game.Workspace:SetAttribute("Winner", alivePlayers[1].Name)
 			alivePlayers[1].leaderstats.Wins.Value += 1
-			alivePlayers[1].Character.Humanoid.Health = 100
+			alivePlayers[1].Character.Humanoid.Health = 100 --shows the winner and gives him its rewards
 			task.wait(3)
 			if alivePlayers[1] then
-				alivePlayers[1].Character.HumanoidRootPart.CFrame = game.Workspace.SpawnLocation.CFrame + Vector3.new(0, 1, 0)
+				alivePlayers[1].Character.HumanoidRootPart.CFrame = game.Workspace.SpawnLocation.CFrame + Vector3.new(0, 1, 0) --teleports the winner back
 				table.remove(alivePlayers, 1)
 			end
             
@@ -337,14 +344,14 @@ local function gameOnGoing()
 
 			game.Workspace:SetAttribute("GameReady", false)
 			game.Workspace:SetAttribute("Winner", "")
-			game.Workspace:SetAttribute("GameTimer", RoundLength)
+			game.Workspace:SetAttribute("GameTimer", RoundLength) --restores the attributes back
 
 			--IF TIMER RUNS OUT	
 
-		elseif game.Workspace:GetAttribute("GameTimer") == -1 then
+		elseif game.Workspace:GetAttribute("GameTimer") == -1 then --once timer runs out without a winner
 			game.StarterGui.ScreenGui:FindFirstChild("Spectate"):Destroy()
 			game.StarterGui.ScreenGui:FindFirstChild("Press"):Destroy()
-			game.Workspace:SetAttribute("Winner", "None")
+			game.Workspace:SetAttribute("Winner", "None") --no winners
 			task.wait(2)
 			for i,plr in pairs(players) do
 				local character = plr.Character
@@ -354,27 +361,27 @@ local function gameOnGoing()
 					elseif plr.Character:FindFirstChild("Sword") then
 						plr.Character:FindFirstChild("Sword"):Destroy()
 					else
-						print("Sword not found")
+						print("Sword not found") --handles if the sword doesnt exist aka if the player leaves the game per say before the game tped them
 					end
 
-					character.HumanoidRootPart.CFrame = game.Workspace.SpawnLocation.CFrame + Vector3.new(0, 1, 0)
-					alivePlayers = {}
+					character.HumanoidRootPart.CFrame = game.Workspace.SpawnLocation.CFrame + Vector3.new(0, 1, 0) --teleports the remaining players back
+					alivePlayers = {} --resets the table
 					onGoing = false
 					game.Workspace:SetAttribute("GameReady", false)
 					game.Workspace:SetAttribute("GameTimer", RoundLength)
-					game.Workspace:SetAttribute("Winner", "")
+					game.Workspace:SetAttribute("Winner", "") --restores the values to default
 				end
 			end
 		end
 
-		--FAIL CHECKS 	
+		--FAIL CHECKS 	(these are self explanatory right? right?)
 
 		--REMOVES PLAYERS WHO LEAVE MIDGAME FROM THE TABLE
 		game.Players.PlayerRemoving:Connect(function(plr)
 			for i = #alivePlayers, 1, -1 do
 				if alivePlayers[i] == plr then
 					table.remove(alivePlayers, i)
-					print(alivePlayers)
+					print(alivePlayers) --makes sure to remoeve the player from the table so it doesnt happen that it accidentally tries looking for them if they leave
 				end
 			end
 
@@ -383,7 +390,7 @@ local function gameOnGoing()
 				onGoing = false
 				game.Workspace:SetAttribute("GameReady", false)
 				game.Workspace:SetAttribute("GameTimer", RoundLength)
-				game.Workspace:SetAttribute("Winner", "")
+				game.Workspace:SetAttribute("Winner", "") --checks if maybe one player is left if someone leaves
 			end
 		end)
 
@@ -394,11 +401,13 @@ local function gameOnGoing()
 	moduleScript.MapsForVote.Map2.Name = ""
 	moduleScript.MapsForVote.Map1.Players = {}
 	moduleScript.MapsForVote.Map2.Players = {}
+
+	--resets all the map voting tables and values
 end
 
 --The loop
 
-while true do
+while true do --a loop!
 	waitingForPlayers()
 	gameBegins()
 	PreparinVote()
